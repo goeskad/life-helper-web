@@ -1,0 +1,76 @@
+<!-- views/index.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat demo</title>
+    <script>
+        function formatKbsQuestions(kbsQuestions) {
+            if (kbsQuestions.length > 0) {
+                const data = JSON.parse(kbsQuestions);
+                
+                const namesAndQueries = [
+                  ...(data.getMeasure || []).map(({name}) => name),
+                  ...(data.searchMarket || []).map(({query}) => query)
+                ];
+                
+                if (namesAndQueries.length > 0) {
+                    return "为了回答您的问题，我们首先将查询以下数据: \n" + namesAndQueries.join('\n') + "请稍后"; 
+                } else {
+                    return "您的问题无需查询数据，将直接由chatGPT为您回答，请稍后";
+                }
+            } else {
+                return "您的问题无需查询数据，将直接由chatGPT为您回答，请稍后";
+            }
+        }
+        
+        async function handleSubmit(event) {
+            event.preventDefault();
+            const input = document.getElementById('message-input').value;
+            const resultDiv = document.getElementById('results');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // 禁用提交按钮
+            submitBtn.disabled = true;
+            
+            // 第一次查询
+            const firstResponse = await fetch('/getKbsQuestions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ input })
+            });
+            const firstResult = await firstResponse.text();
+            const firstResultHtml = formatKbsQuestions(firstResult);
+            resultDiv.innerHTML = `<pre>AI assistant: ${firstResultHtml}</pre>`;
+
+            // 第二次查询
+            const secondResponse = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ input, kbsQueries: firstResult })
+            });
+            const secondResult = await secondResponse.text();
+            resultDiv.innerHTML += `<pre>AI assistant: ${secondResult}</pre>`;
+            
+            // 启用提交按钮
+            submitBtn.disabled = false;
+        }
+    </script>
+</head>
+<body>
+    <h1>个人理财助理</h1>
+    <form onsubmit="handleSubmit(event)">
+        <br>
+        <textarea id="message-input" maxlength="500" cols="60" rows="10" placeholder="请输入您的问题"></textarea>
+        <br><br>
+        <button id="submitBtn" type="submit">提交</button>
+    </form>
+    <div id="results" width="50%">
+    </div>
+</body>
+</html>
