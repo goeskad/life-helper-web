@@ -38,8 +38,7 @@ app.post("/chat", async (req, res) => {
         const response = fetch("https://api.openai.com/v1/chat/completions", {
             "method": "POST",
             "headers": {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer xxx"
+                "Content-Type": "application/json"
             },
             "body": "{\"max_tokens\":1000,\"model\":\"gpt-3.5-turbo\",\"temperature\":0.8,\"top_p\":1,\"presence_penalty\":1,\"messages\":[{\"role\":\"system\",\"content\":\"You are ChatGPT, a large language model trained by OpenAI. Follow the user's instructions carefully. Respond using markdown.\"},{\"role\":\"user\",\"content\":\"df\"}],\"stream\":true}",
         }
