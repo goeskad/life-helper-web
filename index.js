@@ -39,7 +39,7 @@ app.post("/chat", async (req, res) => {
             "method": "POST",
             "headers": {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer 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"
+                "Authorization": "Bearer xxx"
             },
             "body": "{\"max_tokens\":1000,\"model\":\"gpt-3.5-turbo\",\"temperature\":0.8,\"top_p\":1,\"presence_penalty\":1,\"messages\":[{\"role\":\"system\",\"content\":\"You are ChatGPT, a large language model trained by OpenAI. Follow the user's instructions carefully. Respond using markdown.\"},{\"role\":\"user\",\"content\":\"df\"}],\"stream\":true}",
         }
